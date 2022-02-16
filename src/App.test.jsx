@@ -11,7 +11,6 @@ describe('Planner App', () => {
       </PlannerProvider>
     );
 
-    // Check for placeholder entry
     screen.getByText('Start Planning');
 
     // Ensure custom entry doesn't already exist
