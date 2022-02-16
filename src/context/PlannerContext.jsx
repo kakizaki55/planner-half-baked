@@ -31,11 +31,10 @@ const PlannerProvider = ({ children }) => {
   const [entries, dispatch] = useReducer(entriesReducer, []);
 
   useEffect(() => {
-    const entries = JSON.parse(localStorage.getItem('Entires'));
-    console.log(entries);
+    const entries = JSON.parse(localStorage.getItem('ENTRIES'));
 
     // dispatch({
-    //   type: 'reset',
+    //   type: 'create',
     //   payload: entries,
     // });
   }, []);

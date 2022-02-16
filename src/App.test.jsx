@@ -11,8 +11,6 @@ describe('Planner App', () => {
       </PlannerProvider>
     );
 
-    screen.getByText('Start Planning');
-
     // Ensure custom entry doesn't already exist
     expect(screen.queryByText('My test entry!')).not.toBeInTheDocument();
 
