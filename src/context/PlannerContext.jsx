@@ -7,7 +7,9 @@ function entriesReducer(entries, { type, payload }) {
   switch (type) {
     case 'create':
       const entry = { ...payload, id: entries.length };
-      return [entry, ...entries];
+      const updatedEntries = [entry, ...entries];
+      localStorage.setItem('ENTRIES', JSON.stringify(updatedEntries));
+      return updatedEntries;
     case 'reset':
       return [...payload];
     case 'update':
@@ -15,7 +17,9 @@ function entriesReducer(entries, { type, payload }) {
         entry.id === payload.id ? payload : entry
       );
     case 'delete':
-      return entries.filter((entry) => entry.id !== payload.id);
+      const deleted = entries.filter((entry) => entry.id !== payload.id);
+      localStorage.setItem('ENTRIES', JSON.stringify(deleted));
+      return deleted;
     default:
       throw Error(`Unknown action: ${type}`);
   }
@@ -27,19 +31,13 @@ const PlannerProvider = ({ children }) => {
   const [entries, dispatch] = useReducer(entriesReducer, []);
 
   useEffect(() => {
-    // Note that 'entries' below would likely be an API request in practice
-    const entries = [
-      {
-        id: 0,
-        title: 'Start Planning',
-        content: 'I should write in my planner',
-        date: parseDate(new Date()),
-      },
-    ];
-    dispatch({
-      type: 'reset',
-      payload: entries,
-    });
+    const entries = JSON.parse(localStorage.getItem('Entires'));
+    console.log(entries);
+
+    // dispatch({
+    //   type: 'reset',
+    //   payload: entries,
+    // });
   }, []);
 
   const addEntry = (entry) => {
