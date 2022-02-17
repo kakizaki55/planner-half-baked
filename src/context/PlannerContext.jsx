@@ -1,9 +1,16 @@
-import { createContext, useContext, useEffect, useReducer } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from 'react';
 import { parseDate } from '../utils/parseDate';
 
 // payload is an entry object:
 // { title: String, content: String, date: Date }
 function entriesReducer(entries, { type, payload }) {
+  console.log('payload', payload);
   switch (type) {
     case 'create':
       const entry = { ...payload, id: entries.length };
@@ -11,7 +18,7 @@ function entriesReducer(entries, { type, payload }) {
       localStorage.setItem('ENTRIES', JSON.stringify(updatedEntries));
       return updatedEntries;
     case 'reset':
-      return [...payload];
+      return payload;
     case 'update':
       return entries.map((entry) =>
         entry.id === payload.id ? payload : entry
@@ -28,16 +35,20 @@ function entriesReducer(entries, { type, payload }) {
 export const PlannerContext = createContext();
 
 const PlannerProvider = ({ children }) => {
-  const [entries, dispatch] = useReducer(entriesReducer, []);
+  const [initialEntries, setInitialEntries] = useState();
 
   useEffect(() => {
-    const entries = JSON.parse(localStorage.getItem('ENTRIES'));
-
-    // dispatch({
-    //   type: 'create',
-    //   payload: entries,
-    // });
+    const data = JSON.parse(localStorage.getItem('ENTRIES'));
+    console.log(data);
+    // setInitialEntries(data);
+    dispatch({
+      type: 'reset',
+      payload: data,
+    });
+    // data.map((item) => {});
   }, []);
+
+  const [entries, dispatch] = useReducer(entriesReducer, []);
 
   const addEntry = (entry) => {
     const payload = {
