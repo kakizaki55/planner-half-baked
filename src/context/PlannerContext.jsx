@@ -1,21 +1,32 @@
-import { createContext, useContext, useEffect, useReducer } from 'react';
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from 'react';
 import { parseDate } from '../utils/parseDate';
 
 // payload is an entry object:
 // { title: String, content: String, date: Date }
 function entriesReducer(entries, { type, payload }) {
+  console.log('payload', payload);
   switch (type) {
     case 'create':
       const entry = { ...payload, id: entries.length };
-      return [entry, ...entries];
+      const updatedEntries = [entry, ...entries];
+      localStorage.setItem('ENTRIES', JSON.stringify(updatedEntries));
+      return updatedEntries;
     case 'reset':
-      return [...payload];
+      return payload;
     case 'update':
       return entries.map((entry) =>
         entry.id === payload.id ? payload : entry
       );
     case 'delete':
-      return entries.filter((entry) => entry.id !== payload.id);
+      const deleted = entries.filter((entry) => entry.id !== payload.id);
+      localStorage.setItem('ENTRIES', JSON.stringify(deleted));
+      return deleted;
     default:
       throw Error(`Unknown action: ${type}`);
   }
@@ -24,23 +35,16 @@ function entriesReducer(entries, { type, payload }) {
 export const PlannerContext = createContext();
 
 const PlannerProvider = ({ children }) => {
-  const [entries, dispatch] = useReducer(entriesReducer, []);
-
   useEffect(() => {
-    // Note that 'entries' below would likely be an API request in practice
-    const entries = [
-      {
-        id: 0,
-        title: 'Start Planning',
-        content: 'I should write in my planner',
-        date: parseDate(new Date()),
-      },
-    ];
+    const data = JSON.parse(localStorage.getItem('ENTRIES'));
+
     dispatch({
       type: 'reset',
-      payload: entries,
+      payload: data || [],
     });
   }, []);
+
+  const [entries, dispatch] = useReducer(entriesReducer, []);
 
   const addEntry = (entry) => {
     const payload = {
@@ -55,12 +59,20 @@ const PlannerProvider = ({ children }) => {
     return entries.find((note) => note.id === Number(id));
   };
 
+  const deleteEntry = (entry) => {
+    const payload = {
+      ...entry,
+    };
+    dispatch({ type: 'delete', payload });
+  };
+
   return (
     <PlannerContext.Provider
       value={{
         entries,
         addEntry,
         getEntry,
+        deleteEntry,
       }}
     >
       {children}

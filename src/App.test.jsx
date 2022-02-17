@@ -1,13 +1,15 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import App from './App';
+import { PlannerProvider } from './context/PlannerContext';
 
 describe('Planner App', () => {
   it('should display a list of planner entries', () => {
-    render(<App />);
-
-    // Check for placeholder entry
-    screen.getByText('Start Planning');
+    render(
+      <PlannerProvider>
+        <App />
+      </PlannerProvider>
+    );
 
     // Ensure custom entry doesn't already exist
     expect(screen.queryByText('My test entry!')).not.toBeInTheDocument();
