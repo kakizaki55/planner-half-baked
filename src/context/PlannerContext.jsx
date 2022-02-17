@@ -35,17 +35,13 @@ function entriesReducer(entries, { type, payload }) {
 export const PlannerContext = createContext();
 
 const PlannerProvider = ({ children }) => {
-  const [initialEntries, setInitialEntries] = useState();
-
   useEffect(() => {
     const data = JSON.parse(localStorage.getItem('ENTRIES'));
-    console.log(data);
-    // setInitialEntries(data);
+
     dispatch({
       type: 'reset',
-      payload: data,
+      payload: data || [],
     });
-    // data.map((item) => {});
   }, []);
 
   const [entries, dispatch] = useReducer(entriesReducer, []);
